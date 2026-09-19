@@ -1,39 +1,119 @@
-import "./checkout.css";
-import axios from 'axios';
+// import "./checkout.css";
+// import axios from 'axios';
 
-import {useEffect,useState} from "react";
-import "./checkout-header.css";
-import { PaymentSummary } from "./PaymentSummary";
-import { OrderSummary } from "./OrderSummary";
-export function CheckoutPage({ cart ,loadCart}) {
-  const [deliveryOptions, setDeliveryOptions] = useState([]);
-  const [paymentSummary, setPaymentSummary] = useState(null);
+// import {useEffect,useState} from "react";
+// import "./checkout-header.css";
+// import { PaymentSummary } from "./PaymentSummary";
+// import { OrderSummary } from "./OrderSummary";
+// export function CheckoutPage({ cart ,loadCart}) {
+//   const [deliveryOptions, setDeliveryOptions] = useState([]);
+//   const [paymentSummary, setPaymentSummary] = useState(null);
 
 
-  useEffect(() => {
-    const fetchCheckoutData= async()=>{
-       let response= await axios.get(
-        '/api/delivery-options?expand=estimatedDeliveryTime'
+//   useEffect(() => {
+//     const fetchCheckoutData= async()=>{
+//        let response= await axios.get(
+//         '/api/delivery-options?expand=estimatedDeliveryTime'
 
-       );
-       setDeliveryOptions(response.data);
+//        );
+//        setDeliveryOptions(response.data);
       
   
 
-     response=await axios.get('/api/payment-summary');
-      setPaymentSummary(response.data);
+//      response=await axios.get('/api/payment-summary');
+//       setPaymentSummary(response.data);
    
+//     }
+//     fetchCheckoutData();
+   
+//   }, [cart]);
+//   return (
+//     <>
+//       <title>Checkout</title>
+   
+
+//       <div className="checkout-header">
+//         <div className="header-content">
+//           <div className="checkout-header-left-section">
+//             <a href="/">
+//               <img className="logo" src="images/logo.png" />
+//               <img className="mobile-logo" src="images/mobile-logo.png" />
+//             </a>
+//           </div>
+
+//           <div className="checkout-header-middle-section">
+//             Checkout (<a className="return-to-home-link"
+//               href="/">3 items</a>)
+//           </div>
+
+//           <div className="checkout-header-right-section">
+//             <img src="images/icons/checkout-lock-icon.png" />
+//           </div>
+//         </div>
+//       </div>
+
+//       <div className="checkout-page">
+//         <div className="page-title">Review your order</div>
+
+//         <div className="checkout-grid">
+//           <OrderSummary cart={cart} deliveryOptions={deliveryOptions} loadCart={loadCart} />
+
+//           <PaymentSummary paymentSummary={paymentSummary} loadCart={loadCart}/>
+//         </div>
+//       </div>
+//     </>
+//   );
+// }
+
+
+
+import "./checkout.css";
+import axios from 'axios';
+
+import { useEffect, useState } from "react";
+import "./checkout-header.css";
+import { PaymentSummary } from "./PaymentSummary";
+import { OrderSummary } from "./OrderSummary";
+
+export function CheckoutPage({ cart, loadCart }) {
+  const [deliveryOptions, setDeliveryOptions] = useState([]);
+  const [paymentSummary, setPaymentSummary] = useState(null);
+
+  // Don't allow checkout if cart is empty
+  useEffect(() => {
+    if (cart.length === 0) {
+      alert ("Your cart is empty!");
+      window.location.href = "/";
     }
-    fetchCheckoutData();
-   
   }, [cart]);
+
+  useEffect(() => {
+    const fetchCheckoutData = async () => {
+      let response = await axios.get(
+        '/api/delivery-options?expand=estimatedDeliveryTime'
+      );
+
+      setDeliveryOptions(response.data);
+
+      response = await axios.get('/api/payment-summary');
+      setPaymentSummary(response.data);
+    };
+
+    fetchCheckoutData();
+  }, [cart]);
+
+  // Don't render checkout page when cart is empty
+  if (cart.length === 0) {
+    return null;
+  }
+
   return (
     <>
       <title>Checkout</title>
-   
 
       <div className="checkout-header">
         <div className="header-content">
+
           <div className="checkout-header-left-section">
             <a href="/">
               <img className="logo" src="images/logo.png" />
@@ -42,26 +122,40 @@ export function CheckoutPage({ cart ,loadCart}) {
           </div>
 
           <div className="checkout-header-middle-section">
-            Checkout (<a className="return-to-home-link"
-              href="/">3 items</a>)
+            Checkout (
+              <a className="return-to-home-link" href="/">
+                {cart.length} items
+              </a>
+            )
           </div>
 
           <div className="checkout-header-right-section">
             <img src="images/icons/checkout-lock-icon.png" />
           </div>
+
         </div>
       </div>
 
       <div className="checkout-page">
-        <div className="page-title">Review your order</div>
+        <div className="page-title">
+          Review your order
+        </div>
 
         <div className="checkout-grid">
-          <OrderSummary cart={cart} deliveryOptions={deliveryOptions} loadCart={loadCart} />
 
-          <PaymentSummary paymentSummary={paymentSummary} />
+          <OrderSummary
+            cart={cart}
+            deliveryOptions={deliveryOptions}
+            loadCart={loadCart}
+          />
+
+          <PaymentSummary
+            paymentSummary={paymentSummary}
+            loadCart={loadCart}
+          />
+
         </div>
       </div>
     </>
   );
 }
-
